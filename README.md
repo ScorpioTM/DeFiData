@@ -12,7 +12,7 @@ A simple TypeScript library that provides direct access to multiple protocols an
 
 ## Installation
 
-You can install the [`DeFiData`](https://scorpiotm.github.io/defidata/classes/DeFiData.html) library via npm:
+You can install the [`DeFiData`](https://scorpiotm.github.io/DeFiData/classes/DeFiData.html) library via npm:
 
 ```shell
 npm install defidata
@@ -20,11 +20,11 @@ npm install defidata
 
 ## Exported Classes
 
-The [`DeFiData`](https://scorpiotm.github.io/defidata/classes/DeFiData.html) library exports the following classes representind multiple protocols and standards:
+The [`DeFiData`](https://scorpiotm.github.io/DeFiData/classes/DeFiData.html) library exports the following classes representind multiple protocols and standards:
 
 ### Tokens
 
-The [`Tokens`](https://scorpiotm.github.io/defidata/classes/Tokens.html) class provides the methods for fetching the information of any token that comply with the `ERC-20` standard. It allows you to:
+The [`Tokens`](https://scorpiotm.github.io/DeFiData/classes/Tokens.html) class provides the methods for fetching the information of any token that comply with the `ERC-20` standard. It allows you to:
 
 - Retrieve detailed information about multiple tokens by providing their addresses.
 - Retrieve the balances of multiple tokens for the given holders addresses.
@@ -49,7 +49,7 @@ await defiData.ready();
 
 ## Documentation
 
-For detailed documentation, including all available methods and their usage, please refer to the [documentation](https://scorpiotm.github.io/defidata).
+For detailed documentation, including all available methods and their usage, please refer to the [documentation](https://scorpiotm.github.io/DeFiData).
 
 ## Supported Networks
 
@@ -68,8 +68,8 @@ These are the currently supported networks:
 
 ## Contributing
 
-Contributions are welcome! If you have any bug reports, feature requests, or suggestions, please open an issue on the [GitHub repository](https://github.com/ScorpioTM/defidata).
+Contributions are welcome! If you have any bug reports, feature requests, or suggestions, please open an issue on the [GitHub repository](https://github.com/ScorpioTM/DeFiData).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE) (including **all dependencies**).
+This project is licensed under the [MIT License](https://github.com/ScorpioTM/DeFiData/blob/main/LICENSE) (including **all dependencies**).

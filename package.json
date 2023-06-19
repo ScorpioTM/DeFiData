@@ -1,6 +1,6 @@
 {
   "name": "defidata",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple TypeScript library that provides direct access to multiple protocols and standards deployed on various blockchain networks with support for smart contracts.",
   "author": "J. M. Vazquez",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/ScorpioTM/DeFiData.git"
   },
-  "homepage": "https://github.com/ScorpioTM/DeFiData#readme",
+  "homepage": "https://scorpiotm.github.io/DeFiData/",
   "bugs": {
     "url": "https://github.com/ScorpioTM/DeFiData/issues"
   },
