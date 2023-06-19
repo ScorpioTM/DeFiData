@@ -1,0 +1,4 @@
+[
+    "function name() external view returns (bytes32)",
+    "function symbol() external view returns (bytes32)"
+]

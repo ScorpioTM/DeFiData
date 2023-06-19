@@ -1,0 +1,49 @@
+{
+    "root": true,
+    "env": {
+        "es2022": true,
+        "node": true,
+        "mocha": true
+    },
+    "plugins": [
+        "prettier"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "prettier"
+    ],
+    "rules": {
+        "prettier/prettier": "error"
+    },
+    "overrides": [
+        {
+            "files": "*.ts",
+            "env": {
+                "es2022": true,
+                "node": true
+            },
+            "parser": "@typescript-eslint/parser",
+            "parserOptions": {
+                "project": "./tsconfig.json",
+                "sourceType": "module"
+            },
+            "plugins": [
+                "@typescript-eslint",
+                "eslint-plugin-tsdoc",
+                "prettier"
+            ],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/eslint-recommended",
+                "plugin:@typescript-eslint/recommended",
+                "prettier"
+            ],
+            "rules": {
+                "no-console": "warn",
+                "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+                "tsdoc/syntax": "warn",
+                "prettier/prettier": "error"
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+# Node Modules
+node_modules
+
+# Enviroment
+.env
+
+# Hardhat
+cache
+artifacts
+
+# Coverage
+coverage
+coverage.json
+.nyc_output
+
+# Build
+dist
+
+# Visual Studio Code files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# Local History for Visual Studio Code
+.history/
+
+# TypeDoc files
+docs

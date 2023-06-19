@@ -1,0 +1,78 @@
+{
+    "providers": [
+        "https://bsc.publicnode.com",
+        "https://endpoints.omniatech.io/v1/bsc/mainnet/public"
+    ],
+    "multicall3": "0xcA11bde05977b3631167028862bE2a173976CA11",
+    "tokens": [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        "0x55d398326f99059fF775485246999027B3197955",
+        "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+    ],
+    "exchanges": [
+        {
+            "name": "PancakeSwap v2",
+            "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+            "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+            "initCodeHash": "0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5",
+            "fee": 25
+        },
+        {
+            "name": "PancakeSwap v1",
+            "router": "0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F",
+            "factory": "0xBCfCcbde45cE874adCB698cC183deBcF17952812",
+            "initCodeHash": "0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66",
+            "fee": 20
+        },
+        {
+            "name": "BiSwap",
+            "router": "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8",
+            "factory": "0x858E3312ed3A876947EA49d572A7C42DE08af7EE",
+            "initCodeHash": "0xfea293c909d87cd4153593f077b76bb7e94340200f4ee84211ae8e4f9bd7ffdf",
+            "fee": 20
+        },
+        {
+            "name": "MDEX",
+            "router": "0x0384E9ad329396C3A6A401243Ca71633B2bC4333",
+            "factory": "0x3CD1C46068dAEa5Ebb0d3f55F6915B10648062B8",
+            "initCodeHash": "0x0d994d996174b05cfc7bed897dc1b20b4c458fc8d64fe98bc78b3c64a6b4d093",
+            "fee": 30
+        },
+        {
+            "name": "ApeSwap",
+            "router": "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7",
+            "factory": "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6",
+            "initCodeHash": "0xf4ccce374816856d11f00e4069e7cada164065686fbef53c6167a63ec2fd8c5b",
+            "fee": 20
+        },
+        {
+            "name": "NomiSwap",
+            "router": "0xD654953D746f0b114d1F85332Dc43446ac79413d",
+            "factory": "0xd6715A8be3944ec72738F0BFDC739d48C3c29349",
+            "initCodeHash": "0x83eb759f5ea0525124f03d4ac741bb4af0bb1c703d5f694bd42a8bd72e495a01",
+            "fee": 30
+        },
+        {
+            "name": "BabySwap",
+            "router": "0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd",
+            "factory": "0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da",
+            "initCodeHash": "0x48c8bec5512d397a5d512fbb7d83d515e7b6d91e9838730bd1aa1b16575da7f5",
+            "fee": 20
+        },
+        {
+            "name": "WaultSwap",
+            "router": "0xD48745E39BbED146eEC15b79cBF964884F9877c2",
+            "factory": "0xB42E3FE71b7E0673335b3331B3e1053BD9822570",
+            "initCodeHash": "0x9599db1eaa37ab366bf260f51beefce9296eb6197de387c533d905e9b82debe9",
+            "fee": 20
+        },
+        {
+            "name": "SafeSwap v2",
+            "router": "0x37da632c6436137BD4D0CA30c98d3c615974120b",
+            "factory": "0x4d05D0045df5562D6D52937e93De6Ec1FECDAd21",
+            "initCodeHash": "0x8bc8f8336dcfcba44096a139671d89637695b1be1cf88aad5d7de56ae35b8bfd",
+            "fee": 20
+        }
+    ]
+}

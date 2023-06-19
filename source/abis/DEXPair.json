@@ -1,0 +1,8 @@
+[
+    "function token0() view returns (address)",
+    "function token1() view returns (address)",
+    "function reserve0() view returns (uint112)",
+    "function reserve1() view returns (uint112)",
+    "function blockTimestampLast() view returns (uint32)",
+    "function getReserves() public view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)"
+]

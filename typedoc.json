@@ -1,0 +1,29 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "name": "DefiData",
+    "entryPoints": ["./source"],
+    "entryPointStrategy": "expand",
+    "exclude": ["./source/protocols/multicall3.ts", "./source/helpers/*"],
+    "includeVersion": true,
+    "excludeExternals": true,
+    "excludeNotDocumented": false,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeReferences": true,
+    "disableSources": false,
+    "out": "./docs",
+    "githubPages": true,
+    "cacheBust": true,
+    "hideParameterTypesInTitle": true,
+    "navigation": {
+        "includeGroups": true,
+        "fullTree": true
+    },
+    "visibilityFilters": {
+        "protected": false,
+        "private": false,
+        "inherited": false,
+        "external": false,
+    },
+    "sort": ["visibility"]
+}
