@@ -9,7 +9,7 @@ const { DeFiData } = require('../dist');
 async function deployFixture() {
   const [signer] = await ethers.getSigners();
 
-  const networkId = Number((await ethers.provider.getNetwork()).networkId);
+  const networkId = Number((await ethers.provider.getNetwork()).chainId);
 
   // Deploy Uniswap v2
   const exchange = await deployUniswapV2(signer);

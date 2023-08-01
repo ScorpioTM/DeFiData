@@ -53,6 +53,22 @@ const argv = yargs(args)
       demandOption: true
     }
   })
+  .command('get-user-locks', 'Retrieve the timelocks of multiple holders addresses', {
+    network: {
+      demandOption: true
+    },
+    holder: {
+      demandOption: true
+    }
+  })
+  .command('get-token-locks', 'Retrieve the timelocks of multiple tokens addresses', {
+    network: {
+      demandOption: true
+    },
+    token: {
+      demandOption: true
+    }
+  })
   .options({
     network: {
       type: 'number',
@@ -61,8 +77,7 @@ const argv = yargs(args)
     },
     token: {
       type: 'string',
-      describe: 'The address of the token',
-      demandOption: true
+      describe: 'The address of the token'
     },
     holder: {
       type: 'string',
@@ -193,6 +208,94 @@ async function main() {
     console.log();
 
     console.timeEnd('Discovery the allowance requires');
+  } else if (argv._[0] === 'get-user-locks') {
+    console.time('Discovery the user timelocks requires');
+
+    const promises = [];
+
+    promises.push(
+      defiData.timelocks.PinkLock.getUsersLocks(
+        argv.network,
+        Array.isArray(argv.holder) === true ? argv.holder : [argv.holder]
+      )
+    );
+    promises.push(
+      defiData.timelocks.UniCrypt.getUsersLocks(
+        argv.network,
+        Array.isArray(argv.holder) === true ? argv.holder : [argv.holder]
+      )
+    );
+
+    const results = await Promise.allSettled(promises);
+    let timelocks = {};
+
+    results.forEach((r) =>
+      r.status === 'fulfilled' ? (timelocks = { ...timelocks, ...r.value }) : console.error(r.reason)
+    );
+
+    Object.keys(timelocks).forEach((holder) => {
+      if (timelocks[holder] !== undefined && timelocks[holder].length > 0) {
+        timelocks[holder].forEach((lock) => {
+          console.log('Vault:       ', lock.vault.name, '-', lock.vault.address);
+          console.log('Token:       ', ethers.getAddress(lock.token));
+          console.log('Owner:       ', ethers.getAddress(lock.owner));
+          console.log('Locked:      ', lock.locked);
+          console.log('Unlocked:    ', lock.unlocked);
+          console.log('Description: ', lock.description);
+          console.log('Date:        ', lock.date);
+          console.table(lock.unlocks);
+          console.log();
+        });
+      } else {
+        console.log('No timelocks found for this user.');
+      }
+    });
+
+    console.timeEnd('Discovery the user timelocks requires');
+  } else if (argv._[0] === 'get-token-locks') {
+    console.time('Discovery the token timelocks requires');
+
+    const promises = [];
+
+    promises.push(
+      defiData.timelocks.PinkLock.getTokensLocks(
+        argv.network,
+        Array.isArray(argv.token) === true ? argv.token : [argv.token]
+      )
+    );
+    promises.push(
+      defiData.timelocks.UniCrypt.getTokensLocks(
+        argv.network,
+        Array.isArray(argv.token) === true ? argv.token : [argv.token]
+      )
+    );
+
+    const results = await Promise.allSettled(promises);
+    let timelocks = {};
+
+    results.forEach((r) =>
+      r.status === 'fulfilled' ? (timelocks = { ...timelocks, ...r.value }) : console.error(r.reason)
+    );
+
+    Object.keys(timelocks).forEach((token) => {
+      if (timelocks[token] !== undefined && timelocks[token].length > 0) {
+        timelocks[token].forEach((lock) => {
+          console.log('Vault:       ', lock.vault.name, '-', lock.vault.address);
+          console.log('Token:       ', ethers.getAddress(lock.token));
+          console.log('Owner:       ', ethers.getAddress(lock.owner));
+          console.log('Locked:      ', lock.locked);
+          console.log('Unlocked:    ', lock.unlocked);
+          console.log('Description: ', lock.description);
+          console.log('Date:        ', lock.date);
+          console.table(lock.unlocks);
+          console.log();
+        });
+      } else {
+        console.log('No timelocks found for this token.');
+      }
+    });
+
+    console.timeEnd('Discovery the token timelocks requires');
   }
 }
 

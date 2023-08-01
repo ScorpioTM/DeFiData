@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // Import the modules
 import fs from 'fs';
 import path from 'path';
@@ -13,7 +14,7 @@ import type { Exchange } from '../protocols';
  */
 declare global {
   // eslint-disable-next-line no-var
-  var DEFIDATA_SETTINGS: Partial<Record<number, Settings>>;
+  var DEFIDATA_SETTINGS: Record<number, Partial<Settings>>;
 }
 
 /**
@@ -103,16 +104,64 @@ function readDefaultSettings(): Record<number, Settings> {
  * Reads the user-provided settings from the `global` object.
  * @returns The user-provided settings.
  */
-function readUserSettingsFromGlobal(): Partial<Record<number, Settings>> | undefined {
-  // Save the user-provided settings
-  let userSettings: Partial<Record<number, Settings>> | undefined = undefined;
+function readUserSettingsFromGlobal(): Record<number, Partial<Settings>> | undefined {
+  if (global.DEFIDATA_SETTINGS === undefined || global.DEFIDATA_SETTINGS.constructor !== Object) return undefined;
 
-  // Try to read the user-provided settings from the `global` object
-  if (global.DEFIDATA_SETTINGS !== undefined && global.DEFIDATA_SETTINGS.constructor === Object) {
-    userSettings = global.DEFIDATA_SETTINGS;
-  } else {
-    // console.error("Couldn't read the user-provided settings from the `global` object!");
-  }
+  // Save the user-provided settings
+  const userSettings: Record<number, Partial<Settings>> = {};
+
+  // Loop through the networks settings and make a deep-copy of each of them
+  Object.keys(global.DEFIDATA_SETTINGS).forEach((chainId: string) => {
+    if (
+      global.DEFIDATA_SETTINGS[parseInt(chainId)] === undefined ||
+      global.DEFIDATA_SETTINGS[parseInt(chainId)] === null
+    )
+      return;
+
+    userSettings[parseInt(chainId)] = {};
+
+    if (
+      'providers' in global.DEFIDATA_SETTINGS[parseInt(chainId)] &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].providers !== undefined &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].providers !== null &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].providers?.constructor === Array
+    )
+      // Deep-copy the providers
+      userSettings[parseInt(chainId)].providers = [...global.DEFIDATA_SETTINGS[parseInt(chainId)].providers!];
+
+    if (
+      'multicall3' in global.DEFIDATA_SETTINGS[parseInt(chainId)] &&
+      typeof global.DEFIDATA_SETTINGS[parseInt(chainId)].multicall3 === 'string' &&
+      ethers.isAddress(global.DEFIDATA_SETTINGS[parseInt(chainId)].multicall3) === true
+    )
+      // Deep-copy the multicall3 address
+      userSettings[parseInt(chainId)].multicall3 = global.DEFIDATA_SETTINGS[parseInt(chainId)].multicall3;
+
+    if (
+      'tokens' in global.DEFIDATA_SETTINGS[parseInt(chainId)] &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].tokens !== undefined &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].tokens !== null &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].tokens?.constructor === Array
+    )
+      // Deep-copy the tokens
+      userSettings[parseInt(chainId)].tokens = [...global.DEFIDATA_SETTINGS[parseInt(chainId)].tokens!];
+
+    if (
+      'exchanges' in global.DEFIDATA_SETTINGS[parseInt(chainId)] &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].exchanges !== undefined &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].exchanges !== null &&
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].exchanges?.constructor === Array
+    ) {
+      userSettings[parseInt(chainId)].exchanges = [];
+
+      // Loop through the exchanges and make a deep-copy of each of them
+      global.DEFIDATA_SETTINGS[parseInt(chainId)].exchanges!.forEach((exchange: Exchange) => {
+        // Deep-copy the exchange
+        if (exchange !== undefined && exchange !== null && exchange.constructor === Object)
+          userSettings[parseInt(chainId)].exchanges!.push({ ...exchange });
+      });
+    }
+  });
 
   return userSettings;
 }
@@ -122,9 +171,9 @@ function readUserSettingsFromGlobal(): Partial<Record<number, Settings>> | undef
  * @param filePath - The path to the user configuration file.
  * @returns The user-provided settings.
  */
-function readUserSettingsFromFile(): Partial<Record<number, Settings>> | undefined {
+function readUserSettingsFromFile(): Record<number, Partial<Settings>> | undefined {
   // Save the user-provided settings
-  let userSettings: Partial<Record<number, Settings>> | undefined = undefined;
+  let userSettings: Record<number, Partial<Settings>> | undefined = undefined;
 
   // Try to read the user-provided onfiguration file
   try {
@@ -150,7 +199,7 @@ function readUserSettingsFromFile(): Partial<Record<number, Settings>> | undefin
  */
 function overrideDefaultSettings(
   defaultSettings: Record<number, Settings>,
-  userSettings: Partial<Record<number, Settings>>
+  userSettings: Record<number, Partial<Settings>>
 ): void {
   // Loop the user-provided settings
   Object.keys(userSettings).forEach((networkId: string) => {
@@ -160,8 +209,21 @@ function overrideDefaultSettings(
 
     // This network doesn't exist in the default settings
     if (defaultSettings[parseInt(networkId)] === undefined) {
-      // Copy this network settings
-      defaultSettings[parseInt(networkId)] = networkSettings;
+      if (
+        networkSettings.providers !== undefined &&
+        networkSettings.providers.constructor === Array &&
+        networkSettings.multicall3 !== undefined &&
+        ethers.isAddress(networkSettings.multicall3) === true &&
+        networkSettings.tokens !== undefined &&
+        networkSettings.tokens.constructor === Array &&
+        networkSettings.exchanges !== undefined &&
+        networkSettings.exchanges.constructor === Array
+      ) {
+        // Copy this network settings
+        defaultSettings[parseInt(networkId)] = networkSettings;
+      } else {
+        throw new TypeError('The provided settings are not valid!');
+      }
     } else {
       // Override default providers
       if (networkSettings.providers !== undefined && networkSettings.providers.constructor === Array) {
@@ -239,7 +301,7 @@ function freezeSettings(settings: Record<number, Settings>): void {
  * @ignore
  */
 export function readLibrarySettings(
-  userSettings: Partial<Record<number, Settings>> | undefined = undefined
+  userSettings: Record<number, Partial<Settings>> | undefined = undefined
 ): Record<number, Settings> {
   // Read the default settings provided by the library
   const defaultSettings: Record<number, Settings> = readDefaultSettings();

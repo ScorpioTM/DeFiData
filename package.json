@@ -1,6 +1,6 @@
 {
   "name": "defidata",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A simple TypeScript library that provides direct access to multiple protocols and standards deployed on various blockchain networks with support for smart contracts.",
   "author": "J. M. Vazquez",
   "license": "MIT",
@@ -28,15 +28,15 @@
     "bin"
   ],
   "scripts": {
-    "build:compile": "tsc --build",
-    "build:clean": "hardhat clean && tsc --build --clean && rimraf \"cache\" \"dist\"",
+    "build:compile": "hardhat compile && node \"scripts/build.js\" && tsc --build",
+    "build:clean": "hardhat clean && tsc --build --clean && rimraf \"cache\" \"dist\" \".nyc_output\"",
     "build": "npm run build:clean && npm run build:compile",
     "prettier": "prettier \"**/*.{js,ts}\" --ignore-path .eslintignore --check",
     "prettier:fix": "prettier \"**/*.{js,ts}\" --ignore-path .eslintignore --write",
     "lint": "npm run prettier && eslint \"**/*.{js,ts}\" --ignore-path .eslintignore",
     "lint:fix": "npm run prettier:fix && eslint \"**/*.{js,ts}\" --ignore-path .eslintignore --fix",
-    "test": "hardhat compile && mocha --timeout 10000",
-    "coverage": "hardhat compile && nyc mocha --timeout 10000",
+    "test": "hardhat compile && mocha \"test\" --recursive --timeout 25000",
+    "coverage": "hardhat compile && nyc mocha \"test\" --recursive --timeout 25000",
     "documentation": "typedoc --plugin typedoc-plugin-merge-modules",
     "defidata": "node \"bin/index.js\""
   },

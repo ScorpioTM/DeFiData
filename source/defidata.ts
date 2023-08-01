@@ -3,6 +3,7 @@ import readLibrarySettings from './settings';
 import getFallbackProvider from './helpers/getFallbackProvider';
 import Multicall3 from './protocols/multicall3';
 import { Tokens } from './protocols/tokens';
+import { PinkLock, UniCrypt } from './protocols/timelocks';
 
 import type { Settings } from './settings';
 
@@ -41,20 +42,33 @@ export class DeFiData {
   private readonly settings: Record<number, Settings>;
 
   /**
+   * The fallback provider instance for each network.
+   */
+  private readonly providers: Record<number, ethers.FallbackProvider> = {};
+
+  /**
    * The multicall3 instances for each network.
    */
   private readonly multicall3: Record<number, Multicall3> = {};
 
   /**
-   * The tokens class instance.
+   * The {@link Tokens | `Tokens`} class instance.
    */
   public readonly tokens: Tokens;
+
+  /**
+   * The instances of the timelocks classes.
+   */
+  public readonly timelocks: {
+    PinkLock: PinkLock;
+    UniCrypt: UniCrypt;
+  };
 
   /**
    * Creates an instance of DeFiData.
    * @param userSettings - The user-provided settings to override the default settings.
    */
-  constructor(userSettings: Partial<Record<number, Settings>> | undefined = undefined) {
+  constructor(userSettings: Record<number, Partial<Settings>> | undefined = undefined) {
     // Set the settings
     this.settings = readLibrarySettings(userSettings);
 
@@ -73,6 +87,9 @@ export class DeFiData {
         // Check if the fallback provider is valid
         if (provider instanceof ethers.FallbackProvider === true) {
           // Declare the multicall3 class with this provider
+          this.providers[parseInt(networkId)] = provider;
+
+          // Declare the multicall3 class with this provider
           this.multicall3[parseInt(networkId)] = new Multicall3(
             provider,
             this.settings[parseInt(networkId)].multicall3
@@ -83,13 +100,19 @@ export class DeFiData {
 
     // Set the classes
     this.tokens = new Tokens(this.settings, this.multicall3);
+
+    // Set the timelocks classes
+    this.timelocks = {
+      PinkLock: new PinkLock(this.settings, this.multicall3),
+      UniCrypt: new UniCrypt(this.settings, this.providers)
+    };
   }
 
   /**
    * Returns a Promise that resolves when the library are ready.
    */
   async ready(): Promise<void> {
-    return await this.tokens.ready();
+    return this.tokens.ready();
   }
 }
 

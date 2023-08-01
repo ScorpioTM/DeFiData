@@ -176,10 +176,6 @@ export interface TokensAllowances {
 }
 
 /**
- * Provides methods for fetching token balances, allowances, and information.
- */
-
-/**
  * The {@link Tokens | `Tokens`} class provides the methods for fetching the information of any token that comply with the `ERC-20` standard. These methods include:
  *
  * - {@link Tokens.getTokens | `getTokens`} method: You can use this method to retrieve detailed information about multiple tokens by providing their addresses.

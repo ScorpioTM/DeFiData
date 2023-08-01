@@ -1,0 +1,67 @@
+{
+    "1": [
+        {
+            "name": "UniCrypt [UniSwap v2]",
+            "locker": "0x663A5C229c09b049E36dCc11a9B0d4a8Eb9db214", 
+            "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+        },
+        {
+            "name": "UniCrypt [SushiSwap]",
+            "locker": "0xED9180976c2a4742C7A57354FD39d8BEc6cbd8AB",
+            "factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac"
+        }
+    ],
+    "56": [
+        {
+            "name": "UniCrypt [PancakeSwap v2]",
+            "locker": "0xC765bddB93b0D1c1A88282BA0fa6B2d00E3e0c83",
+            "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"
+        },
+        {
+            "name": "UniCrypt [PancakeSwap v1]",
+            "locker": "0xc8B839b9226965caf1d9fC1551588AaF553a7BE6",
+            "factory": "0xBCfCcbde45cE874adCB698cC183deBcF17952812"
+        },
+        {
+            "name": "UniCrypt [BiSwap]",
+            "locker": "0x74dEE1a3E2b83e1D1F144Af2B741bbAFfD7305e1",
+            "factory": "0x858E3312ed3A876947EA49d572A7C42DE08af7EE"
+        },
+        {
+            "name": "UniCrypt [SafeSwap]",
+            "locker": "0x1391B48C996bA2f4f38AEe07E369a8F28d38220E",
+            "factory": "0x86A859773cf6df9C8117F20b0B950adA84e7644d"
+        },
+        {
+            "name": "UniCrypt [JulSwap]",
+            "locker": "0x1f23742D882ace96baCE4658e0947cCCc07B6a75",
+            "factory": "0x553990F2CBA90272390f62C5BDb1681fFc899675"
+        },
+        {
+            "name": "UniCrypt [BabyDogeSwap]",
+            "locker": "0xB89a15A4F3518c14C21BE04B55546162b0cB39F0",
+            "factory": "0x4693B62E5fc9c0a45F89D62e6300a03C85f43137"
+        }
+    ],
+    "100": [
+        {
+            "name": "UniCrypt [HoneySwap]",
+            "locker": "0xe3D32266974f1E8f8549cAf9F54977040e7D1c07",
+            "factory": "0xA818b4F111Ccac7AA31D0BCc0806d64F2E0737D7"
+        }
+    ],
+    "137": [
+        {
+            "name": "UniCrypt [QuickSwap]",
+            "locker": "0xaDB2437e6F65682B85F814fBc12FeC0508A7B1D0",
+            "factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32"
+        }
+    ],
+    "43114": [
+        {
+            "name": "UniCrypt [TraderJoe]",
+            "locker": "0xa9f6AEfA5d56db1205f36c34E6482A6d4979b3bb",
+            "factory": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10"
+        }
+    ]
+}

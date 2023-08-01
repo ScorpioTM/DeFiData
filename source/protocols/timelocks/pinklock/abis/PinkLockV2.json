@@ -1,0 +1,23 @@
+[
+    "function allLpTokenLockedCount() external view returns (uint256)",
+    "function allNormalTokenLockedCount() external view returns (uint256)",
+    "function cumulativeLockInfo(address) external view returns (address token, address factory, uint256 amount)",
+    "function getCumulativeLpTokenLockInfo(uint256 start, uint256 end) external view returns (tuple(address token, address factory, uint256 amount)[] cumulativeLocksInfo)",
+    "function getCumulativeLpTokenLockInfoAt(uint256 index) external view returns (tuple(address token, address factory, uint256 amount) cumulativeLockInfo)",
+    "function getCumulativeNormalTokenLockInfo(uint256 start, uint256 end) external view returns (tuple(address token, address factory, uint256 amount)[] cumulativeLocksInfo)",
+    "function getCumulativeNormalTokenLockInfoAt(uint256 index) external view returns (tuple(address token, address factory, uint256 amount) cumulativeLockInfo)",
+    "function getLockAt(uint256 index) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description) lockInfo)",
+    "function getLockById(uint256 lockId) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description) lockInfo)",
+    "function getLocksForToken(address token, uint256 start, uint256 end) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description)[] locksInfo)",
+    "function getTotalLockCount() external view returns (uint256)",
+    "function lpLockCountForUser(address user) external view returns (uint256)",
+    "function lpLockForUserAtIndex(address user, uint256 index) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description) lockInfo)",
+    "function lpLocksForUser(address user) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description)[] locksInfo)",
+    "function normalLockCountForUser(address user) external view returns (uint256)",
+    "function normalLockForUserAtIndex(address user, uint256 index) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description) lockInfo)",
+    "function normalLocksForUser(address user) external view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 tgeDate, uint256 tgeBps, uint256 cycle, uint256 cycleBps, uint256 unlockedAmount, string description)[] locksInfo)",
+    "function totalLockCountForToken(address token) external view returns (uint256)",
+    "function totalLockCountForUser(address user) external view returns (uint256)",
+    "function totalTokenLockedCount() external view returns (uint256)",
+    "function withdrawableTokens(uint256 lockId) external view returns (uint256)"
+]

@@ -65,6 +65,8 @@ These are the currently supported networks:
 - https://docs.pancakeswap.finance/developers/smart-contracts/pancakeswap-exchange/v2-contracts
 - https://docs.sushi.com/docs/Products/Classic%20AMM/Deployment%20Addresses
 - https://apeswap.gitbook.io/apeswap-finance/where-dev/smart-contracts
+- https://github.com/indexed-finance/multicall
+- https://destiner.io/blog/post/deployless-multicall/
 
 ## Contributing
 
