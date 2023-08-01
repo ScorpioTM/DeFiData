@@ -30,6 +30,20 @@ The [`Tokens`](https://scorpiotm.github.io/DeFiData/classes/Tokens.html) class p
 - Retrieve the balances of multiple tokens for the given holders addresses.
 - Retrieve the allowances of multiple tokens for the given holders and spender addresses.
 
+### PinkLock
+
+The [`PinkLock`](https://scorpiotm.github.io/DeFiData/classes/PinkLock.html) class provides methods for retrieving token timelocks associated with user addresses and token addresses from different versions of [`PinkLock`](https://scorpiotm.github.io/DeFiData/classes/PinkLock.html)'s contracts. It allows you to:
+
+- Retrieve the timelocks associated with multiple user addresses.
+- Retrieve the timelocks associated with multiple token addresses.
+
+### UniCrypt
+
+The [`UniCrypt`](https://scorpiotm.github.io/DeFiData/classes/UniCrypt.html) class provides methods for retrieving tokens timelocks associated with user addresses and token addresses from different versions of [`UniCrypt`](https://scorpiotm.github.io/DeFiData/classes/UniCrypt.html)'s contracts. It allows you to:
+
+- Retrieve the timelocks associated with multiple user addresses.
+- Retrieve the timelocks associated with multiple token addresses.
+
 ## Usage
 
 Here's an example of how to use DeFiData library:

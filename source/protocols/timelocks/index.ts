@@ -1,5 +1,8 @@
 /**
  * Represents an unlock event on a timelock object.
+ *
+ * @category PinkLock
+ * @category UniCrypt
  */
 export interface Unlock {
   /**
@@ -14,6 +17,9 @@ export interface Unlock {
 
 /**
  * Represents a vault on a timelock object.
+ *
+ * @category PinkLock
+ * @category UniCrypt
  */
 export interface Vault {
   /**
@@ -28,6 +34,9 @@ export interface Vault {
 
 /**
  * Represents a timelock with its associated information.
+ *
+ * @category PinkLock
+ * @category UniCrypt
  */
 export interface Timelock {
   /**

@@ -48,6 +48,8 @@ interface Vault {
  * const tokenLocks = await locker.getTokensLocks(1, tokens);
  * console.log(tokenLocks);
  * ```
+ *
+ * @category UniCrypt
  */
 export class UniCrypt {
   /**

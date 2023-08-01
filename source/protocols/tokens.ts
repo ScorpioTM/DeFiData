@@ -16,6 +16,8 @@ import type { Settings } from '../settings';
 
 /**
  * Represents a decentralized exchange with its associated information.
+ *
+ * @category Tokens
  */
 export interface Exchange {
   /**
@@ -42,6 +44,8 @@ export interface Exchange {
 
 /**
  * Represents a pair in a decentralized exchange with its associated information.
+ *
+ * @category Tokens
  */
 export interface Pair {
   /**
@@ -77,6 +81,8 @@ export interface Pair {
 
 /**
  * Represents a token with its associated information.
+ *
+ * @category Tokens
  */
 export interface Token {
   /**
@@ -132,6 +138,8 @@ export interface Token {
 
 /**
  * Represents the token balances of multiple holders.
+ *
+ * @category Tokens
  */
 export interface TokensBalances {
   [
@@ -151,6 +159,8 @@ export interface TokensBalances {
 
 /**
  * Represents token allowances for various tokens, holders, and spenders.
+ *
+ * @category Tokens
  */
 export interface TokensAllowances {
   [
@@ -202,6 +212,8 @@ export interface TokensAllowances {
  *
  * // Use the `Tokens` class...
  * ```
+ *
+ * @category Tokens
  */
 export class Tokens {
   /**

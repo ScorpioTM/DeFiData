@@ -19,6 +19,8 @@ declare global {
 
 /**
  * Represents the configuration for a network.
+ *
+ * @category DeFiData
  */
 export interface Settings {
   /**

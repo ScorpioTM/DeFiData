@@ -45,6 +45,8 @@ import PinkLockV2 from './abis/PinkLockV2.json';
  * const tokenLocks = await locker.getTokensLocks(1, tokens);
  * console.log(tokenLocks);
  * ```
+ *
+ * @category PinkLock
  */
 export class PinkLock {
   /**

@@ -16,14 +16,16 @@
     "cacheBust": true,
     "hideParameterTypesInTitle": true,
     "navigation": {
-        "includeGroups": true,
+        "includeCategories": true,
+        "includeGroups": false,
         "fullTree": true
     },
+    "categorizeByGroup": false,
     "visibilityFilters": {
         "protected": false,
         "private": false,
         "inherited": false,
         "external": false,
     },
-    "sort": ["visibility"]
+    "sort": ["kind"]
 }

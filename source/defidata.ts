@@ -12,8 +12,9 @@ import type { Settings } from './settings';
  *
  * These are the classes exported by the {@link DeFiData."constructor" | `DeFiData`} class:
  *
- * - `multicall3`: An object that contains instances of the `Multicall3` class for each network.
  * - `tokens`: An instance of the {@link Tokens | `Tokens`} class, which provides the methods for fetching the information of any token that comply with the `ERC-20` standard.
+ * - `pinlock`: An instance of the {@link PinkLock | `PinkLock`} class, which provides the methods for retrieving token timelocks associated with user addresses and token addresses from different versions of {@link PinkLock | `PinkLock`}'s contracts.
+ * - `unicrypt`: An instance of the {@link UniCrypt | `UniCrypt`} class, which provides the methods for retrieving token timelocks associated with user addresses and token addresses from different versions of {@link UniCrypt | `UniCrypt`}'s contracts.
  *
  * In addition, the {@link DeFiData."constructor" | `DeFiData`} class {@link DeFiData."constructor" | `constructor`} accepts a partial object of type {@link Settings | `Settings`}, allowing the user to provide custom configuration to override the default settings.
  *
@@ -34,6 +35,8 @@ import type { Settings } from './settings';
  *
  * // Use the `DeFiData` library...
  * ```
+ *
+ * @category DeFiData
  */
 export class DeFiData {
   /**
