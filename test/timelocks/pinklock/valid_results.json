@@ -98,7 +98,7 @@
             "token": "0xeAa13f0C59E93c7aAbCE9631d8dCD1B1Ac349Db5",
             "owner": "0xb0D812aF0330dF7e4500860957C3762A2a5A9CC0",
             "locked": "80000000000000000000000",
-            "unlocked": "0",
+            "unlocked": "32000000000000000000000",
             "unlocks": [
                 {
                     "unlockAmount": "8000000000000000000000",
@@ -193,7 +193,7 @@
             "token": "0xeAa13f0C59E93c7aAbCE9631d8dCD1B1Ac349Db5",
             "owner": "0xb0D812aF0330dF7e4500860957C3762A2a5A9CC0",
             "locked": "80000000000000000000000",
-            "unlocked": "0",
+            "unlocked": "32000000000000000000000",
             "unlocks": [
                 {
                     "unlockAmount": "8000000000000000000000",

@@ -461,9 +461,8 @@ describe('Settings', function () {
 
           it('Must have only unique providers', function () {
             // Check for duplicates
-            expect(
-              new Set(DEFAULT_SETTINGS[networkId].providers).size === DEFAULT_SETTINGS[networkId].providers.length
-            ).to.be.true;
+            expect(new Set(DEFAULT_SETTINGS[networkId].providers).size === DEFAULT_SETTINGS[networkId].providers.length)
+              .to.be.true;
           });
 
           // Get the fallback provider
@@ -485,9 +484,8 @@ describe('Settings', function () {
 
           it('Must have only unique tokens', function () {
             // Check for duplicates
-            expect(
-              new Set(DEFAULT_SETTINGS[networkId].tokens).size === DEFAULT_SETTINGS[networkId].tokens.length
-            ).to.be.true;
+            expect(new Set(DEFAULT_SETTINGS[networkId].tokens).size === DEFAULT_SETTINGS[networkId].tokens.length).to.be
+              .true;
           });
 
           it('Must have only valid tokens', function () {

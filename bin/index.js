@@ -86,6 +86,10 @@ const argv = yargs(args)
     spender: {
       type: 'string',
       describe: 'The address of the spender'
+    },
+    block: {
+      type: 'number',
+      describe: 'The number of the block in which the query will run'
     }
   })
   .demandCommand(1).argv;
@@ -121,7 +125,8 @@ async function main() {
     // Get the token information
     const result = (
       await defiData.tokens.getTokens(argv.network, [argv.token], {
-        getPairs: true
+        getPairs: true,
+        blockTag: argv.block
       })
     )[ethers.getAddress(argv.token)];
 
@@ -176,12 +181,18 @@ async function main() {
     console.time('Discovery the balance requires');
 
     // Get the holder balance
-    const result = await defiData.tokens.getBalances(argv.network, [
+    const result = await defiData.tokens.getBalances(
+      argv.network,
+      [
+        {
+          token: argv.token,
+          holder: argv.holder
+        }
+      ],
       {
-        token: argv.token,
-        holder: argv.holder
+        blockTag: argv.block
       }
-    ]);
+    );
 
     console.log('Token:  ', ethers.getAddress(argv.token));
     console.log('Holder: ', ethers.getAddress(argv.holder));
@@ -193,13 +204,19 @@ async function main() {
     console.time('Discovery the allowance requires');
 
     // Get the spender allowance
-    const result = await defiData.tokens.getAllowances(argv.network, [
+    const result = await defiData.tokens.getAllowances(
+      argv.network,
+      [
+        {
+          token: argv.token,
+          holder: argv.holder,
+          spender: argv.spender
+        }
+      ],
       {
-        token: argv.token,
-        holder: argv.holder,
-        spender: argv.spender
+        blockTag: argv.block
       }
-    ]);
+    );
 
     console.log('Token:    ', ethers.getAddress(argv.token));
     console.log('Holder:   ', ethers.getAddress(argv.holder));

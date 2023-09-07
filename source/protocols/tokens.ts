@@ -297,6 +297,14 @@ export class Tokens {
        * Indicates whether to include the trading pairs inside the additional {@link Token.pairs | `pairs`} property of the returned {@link Token | `Token`} object.
        */
       getPairs?: boolean;
+      /**
+       * An optional array of {@link Token | `Token`} objects representing the base tokens to override the default base tokens for the specified network.
+       */
+      baseTokens?: Token[];
+      /**
+       * The number of the block in which the query will run.
+       */
+      blockTag?: number | string | bigint;
     } = {}
   ): Promise<{ [tokenAddress: string]: Token }> {
     if (this.isReady === false)
@@ -304,6 +312,9 @@ export class Tokens {
     if (Object.keys(this.settings).indexOf(networkId.toString()) === -1) throw new TypeError('Invalid network id!');
     if (tokenAddresses.constructor !== Array || tokenAddresses.length === 0)
       throw new TypeError('`tokenAddresses` must be an array of addresses!');
+
+    // Overwrite the base tokens
+    if (options.baseTokens === undefined) options.baseTokens = this.baseTokens[networkId];
 
     // Loop the tokens
     tokenAddresses.forEach((tokenAddress: string) => {
@@ -318,7 +329,7 @@ export class Tokens {
         // Loop the exchanges
         this.settings[networkId].exchanges.forEach((exchange: Exchange) => {
           // Loop the base tokens
-          this.baseTokens[networkId].forEach((baseToken: Token) => {
+          options.baseTokens!.forEach((baseToken: Token) => {
             // Add the pair info call
             callUniswapV2Pair(this.multicall3[networkId], exchange, tokenAddress, baseToken.token);
           });
@@ -327,7 +338,7 @@ export class Tokens {
     });
 
     // Execute the pending calls
-    await this.multicall3[networkId].runCalls();
+    await this.multicall3[networkId].runCalls(options.blockTag);
 
     const result: { [tokenAddress: string]: Token } = {};
 
@@ -336,7 +347,7 @@ export class Tokens {
       // Get this token information
       const tokenInfo: Token = getTokenInfo(this.multicall3[networkId], tokenAddress, this.settings[networkId].tokens);
 
-      // Check if `getPairs` is enabled
+      // Check if `getPairs` is undefined
       if (options.getPairs === undefined || options.getPairs !== true) {
         // Save this token information
         result[tokenAddress] = tokenInfo;
@@ -350,7 +361,7 @@ export class Tokens {
         // Loop the exchanges
         this.settings[networkId].exchanges.forEach((exchange: Exchange) => {
           // Loop the base tokens
-          this.baseTokens[networkId].forEach((baseToken: Token) => {
+          options.baseTokens!.forEach((baseToken: Token) => {
             // Get this pair information
             const pair: Pair | undefined = getUniswapV2Pair(this.multicall3[networkId], exchange, tokenInfo, baseToken);
 
@@ -371,6 +382,7 @@ export class Tokens {
    * Retrieve the balances of multiple tokens for the given holders addresses.
    * @param networkId - The network ID.
    * @param inputList - An array of objects containing token and holder addresses.
+   * @param options - An optional object containing additional options.
    * @throws Throws a error if the library is not initialized.
    * @throws Throws a type error if the network ID is invalid.
    * @throws Throws a type error if `inputList` is not an array of objects with the token and holder addresses.
@@ -387,7 +399,13 @@ export class Tokens {
        * The address of the holder.
        */
       holder: string;
-    }[]
+    }[],
+    options: {
+      /**
+       * The number of the block in which the query will run.
+       */
+      blockTag?: number | string | bigint;
+    } = {}
   ): Promise<TokensBalances> {
     if (this.isReady === false)
       throw new Error('The library is not initialized. Call the `ready` method before using any other function!');
@@ -411,7 +429,7 @@ export class Tokens {
     });
 
     // Execute the pending calls
-    await this.multicall3[networkId].runCalls();
+    await this.multicall3[networkId].runCalls(options.blockTag);
 
     const tokenBalances: TokensBalances = {};
 
@@ -442,6 +460,7 @@ export class Tokens {
    * Retrieve the allowances of multiple tokens for the given holders and spender addresses.
    * @param networkId - The ID of the network where the tokens are located.
    * @param inputList - An array of objects containing token, holder, and spender information.
+   * @param options - An optional object containing additional options.
    * @throws Throws a error if the library is not initialized.
    * @throws Throws a type error if the network ID is invalid.
    * @throws Throws a type error if `inputList` is not an array of objects with the token, holder and spender addresses.
@@ -464,7 +483,13 @@ export class Tokens {
        * The address of the spender.
        */
       spender: string;
-    }[]
+    }[],
+    options: {
+      /**
+       * The number of the block in which the query will run.
+       */
+      blockTag?: number | string | bigint;
+    } = {}
   ): Promise<TokensAllowances> {
     if (this.isReady === false)
       throw new Error('The library is not initialized. Call the `ready` method before using any other function!');
@@ -496,7 +521,7 @@ export class Tokens {
     });
 
     // Execute the pending calls
-    await this.multicall3[networkId].runCalls();
+    await this.multicall3[networkId].runCalls(options.blockTag);
 
     const tokensAllowances: TokensAllowances = {};
 

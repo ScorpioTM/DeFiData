@@ -31,7 +31,7 @@ export function callUniswapV2Pair(multicall3: Multicall3, exchange: Exchange, to
   const pairAddress: string = computeUniswapV2Pair(exchange.factory, exchange.initCodeHash, tokenA, tokenB);
 
   // Get this pair reserves
-  multicall3.addCall(DEXPair, pairAddress, 'getReserves()', [], true);
+  multicall3.addCall(DEXPair, pairAddress, 'getReserves()', [], true, true);
 }
 
 export default callUniswapV2Pair;

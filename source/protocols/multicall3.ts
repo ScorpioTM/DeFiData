@@ -44,9 +44,10 @@ export class Multicall3 {
     contractAddress: string,
     callMethod: string,
     callParameters: unknown[],
-    allowFailure = true
+    allowFailure = true,
+    allowDuplicates = false
   ): string {
-    return this._addCall(contractABI, contractAddress, callMethod, callParameters, allowFailure);
+    return this._addCall(contractABI, contractAddress, callMethod, callParameters, allowFailure, allowDuplicates);
   }
 
   getCall(callReference: string): Result | undefined;
@@ -73,14 +74,16 @@ export class Multicall3 {
     } else throw new Error('Invalid arguments error while adding call!');
   }
 
-  public async runCalls(): Promise<void> {
+  public async runCalls(blockTag?: number | string | bigint): Promise<void> {
     // Format the pending calls
     const contractCalls: Call3[] = Object.keys(this._contractCalls).map(
       (callReference: string) => this._contractCalls[callReference]
     );
 
     // Execute the pending calls
-    const response: Aggregate3Response[] = await this._multicall3.aggregate3.staticCall(contractCalls);
+    const response: Aggregate3Response[] = await this._multicall3.aggregate3.staticCall(contractCalls, {
+      blockTag: blockTag === undefined ? 'latest' : blockTag
+    });
 
     // Erase the previous responses
     this._contractResponses = {};
@@ -104,13 +107,19 @@ export class Multicall3 {
     contractAddress: string,
     callMethod: string,
     callParameters: unknown[],
-    allowFailure: boolean
+    allowFailure: boolean,
+    allowDuplicates: boolean
   ): string {
     // Get the unique reference for this call
     const callReference: string = this._getCallReference(contractABI, contractAddress, callMethod, callParameters);
 
     // Check for duplicates
-    if (this._contractCalls[callReference] !== undefined) throw new Error('This contract call is already defined!');
+    if (this._contractCalls[callReference] !== undefined) {
+      if (allowDuplicates !== true) throw new Error('This contract call is already defined!');
+
+      // Return the unique reference
+      return callReference;
+    }
 
     // Define the interface for this call
     const contractInterface = new Interface(contractABI);
