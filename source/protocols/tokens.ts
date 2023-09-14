@@ -302,6 +302,10 @@ export class Tokens {
        */
       baseTokens?: Token[];
       /**
+       * An optional array of token addresses representing the base tokens added to the default base tokens for the specified network.
+       */
+      extraBaseTokens?: string[];
+      /**
        * The number of the block in which the query will run.
        */
       blockTag?: number | string | bigint;
@@ -312,12 +316,66 @@ export class Tokens {
     if (Object.keys(this.settings).indexOf(networkId.toString()) === -1) throw new TypeError('Invalid network id!');
     if (tokenAddresses.constructor !== Array || tokenAddresses.length === 0)
       throw new TypeError('`tokenAddresses` must be an array of addresses!');
+    if (
+      options.baseTokens !== undefined &&
+      (options.baseTokens.constructor !== Array || options.baseTokens.length === 0)
+    )
+      throw new TypeError('`options.baseTokens` must be an array of `Token` objects!');
+    if (
+      options.extraBaseTokens !== undefined &&
+      (options.extraBaseTokens.constructor !== Array || options.extraBaseTokens.length === 0)
+    )
+      throw new TypeError('`options.extraBaseTokens` must be an array of addresses!');
 
-    // Overwrite the base tokens
-    if (options.baseTokens === undefined) options.baseTokens = this.baseTokens[networkId];
+    // Remove duplicate token addresses
+    tokenAddresses = tokenAddresses.filter((value: string, index: number) => tokenAddresses.indexOf(value) === index);
 
-    // Loop the tokens
-    tokenAddresses.forEach((tokenAddress: string) => {
+    // Get the default base tokens
+    const baseTokens: Token[] = options.baseTokens !== undefined ? options.baseTokens : [...this.baseTokens[networkId]];
+
+    // Save the tokens to lookup
+    const tokensToLookup: string[] = tokenAddresses;
+
+    // Check if extra base tokens are defined
+    if (options.extraBaseTokens !== undefined) {
+      // Format the extra base tokens
+      options.extraBaseTokens = options.extraBaseTokens.map((baseToken: string) => ethers.getAddress(baseToken));
+
+      // Remove duplicate extra base tokens
+      options.extraBaseTokens = options.extraBaseTokens.filter(
+        (value: string, index: number) => options.extraBaseTokens!.indexOf(value) === index
+      );
+
+      const baseTokensAddresses: string[] = baseTokens.map((token: Token) => token.token);
+
+      // Loop the extra base tokens
+      options.extraBaseTokens.forEach((extraBaseToken: string) => {
+        // Search this extra base token in the base tokens
+        if (baseTokensAddresses.indexOf(extraBaseToken) !== -1) return;
+
+        // Add a temporal `Token` object with this extra base token address to the base tokens
+        baseTokens.push({
+          token: extraBaseToken,
+          name: '',
+          symbol: '',
+          decimals: 0,
+          totalSupply: 0n,
+          transferLimit: 0n,
+          walletLimit: 0n,
+          owner: '',
+          isBaseToken: true
+        });
+
+        // Search this extra base token in the tokens to lookup
+        if (tokensToLookup.indexOf(extraBaseToken) !== -1) return;
+
+        // Add this extra base token to the tokens to lookup
+        tokensToLookup.push(extraBaseToken);
+      });
+    }
+
+    // Loop the tokens to lookup
+    tokensToLookup.forEach((tokenAddress: string) => {
       if (typeof tokenAddress !== 'string' || ethers.isAddress(tokenAddress) !== true)
         throw new TypeError('`tokenAddresses` must be an array of addresses!');
 
@@ -329,7 +387,7 @@ export class Tokens {
         // Loop the exchanges
         this.settings[networkId].exchanges.forEach((exchange: Exchange) => {
           // Loop the base tokens
-          options.baseTokens!.forEach((baseToken: Token) => {
+          baseTokens.forEach((baseToken: Token) => {
             // Add the pair info call
             callUniswapV2Pair(this.multicall3[networkId], exchange, tokenAddress, baseToken.token);
           });
@@ -340,12 +398,31 @@ export class Tokens {
     // Execute the pending calls
     await this.multicall3[networkId].runCalls(options.blockTag);
 
+    // Get the base tokens addresses (Check if the base tokens array is empty to catch the internal call of the `ready` method)
+    const baseTokensAddresses: string[] =
+      baseTokens.length === 0 ? this.settings[networkId].tokens : baseTokens.map((token: Token) => token.token);
+
+    // Check if extra base tokens are defined
+    if (options.extraBaseTokens !== undefined) {
+      // Loop the extra base tokens
+      options.extraBaseTokens.forEach((extraBaseToken: string) => {
+        // Get this extra base token information
+        const extraBaseTokenInfo: Token = getTokenInfo(this.multicall3[networkId], extraBaseToken, baseTokensAddresses);
+
+        // Get the index of this extra base token in the base tokens array
+        const baseTokenIndex: number = baseTokensAddresses.indexOf(extraBaseToken);
+
+        // Replace the temporal `Token` object in the base tokens array with this extra base token `Token` object
+        baseTokens[baseTokenIndex] = extraBaseTokenInfo;
+      });
+    }
+
     const result: { [tokenAddress: string]: Token } = {};
 
     // Loop the tokens
     tokenAddresses.forEach((tokenAddress) => {
       // Get this token information
-      const tokenInfo: Token = getTokenInfo(this.multicall3[networkId], tokenAddress, this.settings[networkId].tokens);
+      const tokenInfo: Token = getTokenInfo(this.multicall3[networkId], tokenAddress, baseTokensAddresses);
 
       // Check if `getPairs` is undefined
       if (options.getPairs === undefined || options.getPairs !== true) {
@@ -361,7 +438,7 @@ export class Tokens {
         // Loop the exchanges
         this.settings[networkId].exchanges.forEach((exchange: Exchange) => {
           // Loop the base tokens
-          options.baseTokens!.forEach((baseToken: Token) => {
+          baseTokens.forEach((baseToken: Token) => {
             // Get this pair information
             const pair: Pair | undefined = getUniswapV2Pair(this.multicall3[networkId], exchange, tokenInfo, baseToken);
 

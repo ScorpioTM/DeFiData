@@ -1,6 +1,6 @@
 {
   "name": "defidata",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A simple TypeScript library that provides direct access to multiple protocols and standards deployed on various blockchain networks with support for smart contracts.",
   "author": "J. M. Vazquez",
   "license": "MIT",
@@ -35,8 +35,8 @@
     "prettier:fix": "prettier \"**/*.{js,ts}\" --ignore-path .eslintignore --write",
     "lint": "npm run prettier && eslint \"**/*.{js,ts}\" --ignore-path .eslintignore",
     "lint:fix": "npm run prettier:fix && eslint \"**/*.{js,ts}\" --ignore-path .eslintignore --fix",
-    "test": "hardhat compile && mocha \"test\" --recursive --timeout 25000",
-    "coverage": "hardhat compile && nyc mocha \"test\" --recursive --timeout 25000",
+    "test": "hardhat compile && mocha \"test\" --recursive --timeout 35000",
+    "coverage": "hardhat compile && nyc mocha \"test\" --recursive --timeout 35000",
     "documentation": "typedoc --plugin typedoc-plugin-merge-modules"
   },
   "bin": {

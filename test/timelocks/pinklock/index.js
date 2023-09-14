@@ -27,6 +27,8 @@ async function deployFixture() {
 async function isValidTimelock(testResult, validResults, addresses) {
   expect(testResult).to.be.an('object');
 
+  const now = new Date();
+
   addresses.forEach((address) => {
     expect(testResult).to.have.property(address).with.be.an('array');
 
@@ -42,11 +44,18 @@ async function isValidTimelock(testResult, validResults, addresses) {
 
       validTimelock.date = new Date(validTimelock.date);
 
+      // Get the actual unlocked amount
+      const unlockedAmount = validTimelock.unlocks.reduce(
+        (accumulator, current) =>
+          current.unlockDate <= now ? accumulator + BigInt(current.unlockAmount) : accumulator,
+        0n
+      );
+
       expect(testTimelock).to.have.property('vault').with.deep.equal(validTimelock.vault);
       expect(testTimelock).to.have.property('token').with.equal(validTimelock.token);
       expect(testTimelock).to.have.property('owner').with.equal(validTimelock.owner);
       expect(testTimelock).to.have.property('locked').with.equal(validTimelock.locked);
-      expect(testTimelock).to.have.property('unlocked').with.equal(validTimelock.unlocked);
+      expect(testTimelock).to.have.property('unlocked').with.equal(unlockedAmount);
       expect(testTimelock).to.have.property('unlocks').with.deep.equal(validTimelock.unlocks);
       expect(testTimelock).to.have.property('date').with.deep.equal(validTimelock.date);
     }

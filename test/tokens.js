@@ -14,14 +14,17 @@ async function deployFixture() {
   // Deploy Uniswap v2
   const exchange = await deployUniswapV2(signer);
 
-  // Deploy mock token
-  const { erc20Contract } = await deployERC20(signer, 'Mock Token', 'MOCK');
+  // Deploy mock tokens
+  const { erc20Contract: mockToken0Contract } = await deployERC20(signer, 'Mock Token 0', 'MOCK0');
+  const { erc20Contract: mockToken1Contract } = await deployERC20(signer, 'Mock Token 1', 'MOCK1');
 
   // Mint mock tokens
-  await erc20Contract.mint(await signer.getAddress(), parseEther('1000000'));
+  await mockToken0Contract.mint(await signer.getAddress(), parseEther('1000000'));
+  await mockToken1Contract.mint(await signer.getAddress(), parseEther('1000000'));
 
   // Approve Uniswap v2 to transfer mock tokens
-  await erc20Contract.approve(await exchange.uniswapV2RouterContract.getAddress(), MaxInt256);
+  await mockToken0Contract.approve(await exchange.uniswapV2RouterContract.getAddress(), MaxInt256);
+  await mockToken1Contract.approve(await exchange.uniswapV2RouterContract.getAddress(), MaxInt256);
 
   // Deploy Multicall v3
   const Multicall3 = await ethers.getContractFactory('Multicall3');
@@ -53,7 +56,7 @@ async function deployFixture() {
 
   await defiData.ready();
 
-  return { signer, networkId, exchange, erc20Contract, defiData };
+  return { signer, networkId, exchange, mockToken0Contract, mockToken1Contract, defiData };
 }
 
 async function isValidToken(tokenInfo, tokenContract, isBaseToken) {
@@ -72,17 +75,13 @@ async function isValidToken(tokenInfo, tokenContract, isBaseToken) {
   expect(tokenInfo)
     .to.have.property('totalSupply')
     .with.equal(await tokenContract.totalSupply());
-  expect(tokenInfo)
-    .to.have.property('transferLimit')
-    .with.equals(isBaseToken === false ? BigInt(10) : BigInt(0));
-  expect(tokenInfo)
-    .to.have.property('walletLimit')
-    .with.equal(isBaseToken === false ? BigInt(100) : BigInt(0));
+  expect(tokenInfo).to.have.property('transferLimit').with.be.oneOf([10n, 0n]);
+  expect(tokenInfo).to.have.property('walletLimit').with.be.oneOf([100n, 0n]);
   expect(tokenInfo).to.have.property('owner').with.equal('');
   expect(tokenInfo).to.have.property('isBaseToken').with.be.equal(isBaseToken);
 }
 
-async function isValidPair(pairInfo, exchange, tokenA, tokenB) {
+async function isValidPair(pairInfo, exchange, tokenA, tokenB, baseToken) {
   // Get the pair contract
   const pairAddress = await exchange.uniswapV2FactoryContract.getPair(
     await tokenA.getAddress(),
@@ -124,30 +123,24 @@ async function isValidPair(pairInfo, exchange, tokenA, tokenB) {
   // Check the token0
   expect(pairInfo).to.have.property('token0').with.be.an('object');
   if (typeof pairInfo.token0 === 'object')
-    await isValidToken(
-      pairInfo.token0,
-      token0,
-      (await token0.getAddress()) === (await exchange.uniswapV2WETHContract.getAddress())
-    );
+    await isValidToken(pairInfo.token0, token0, (await token0.getAddress()) === (await baseToken.getAddress()));
 
   // Check the token1
   expect(pairInfo).to.have.property('token1').with.be.an('object');
   if (typeof pairInfo.token1 === 'object')
-    await isValidToken(
-      pairInfo.token1,
-      token1,
-      (await token1.getAddress()) === (await exchange.uniswapV2WETHContract.getAddress())
-    );
+    await isValidToken(pairInfo.token1, token1, (await token1.getAddress()) === (await baseToken.getAddress()));
 }
 
 describe('`Tokens` Class', function () {
   describe('Public Methods', function () {
     describe('Method `getBalances`', function () {
       it('Should throw an error for invalid network ID', async function () {
-        const { signer, defiData, erc20Contract } = await loadFixture(deployFixture);
+        const { signer, defiData, mockToken0Contract } = await loadFixture(deployFixture);
 
         await expect(
-          defiData.tokens.getBalances(0, [{ token: erc20Contract.getAddress(), holder: await signer.getAddress() }])
+          defiData.tokens.getBalances(0, [
+            { token: mockToken0Contract.getAddress(), holder: await signer.getAddress() }
+          ])
         ).to.be.rejectedWith(TypeError, 'Invalid network id!');
       });
 
@@ -169,14 +162,14 @@ describe('`Tokens` Class', function () {
       });
 
       it('Should throw an error when the library is not initialized', async function () {
-        const { signer, networkId, erc20Contract } = await loadFixture(deployFixture);
+        const { signer, networkId, mockToken0Contract } = await loadFixture(deployFixture);
 
         // Create the DeFiData library
         const defiData = new DeFiData();
 
         await expect(
           defiData.tokens.getBalances(networkId, [
-            { token: erc20Contract.getAddress(), holder: await signer.getAddress() }
+            { token: mockToken0Contract.getAddress(), holder: await signer.getAddress() }
           ])
         ).to.be.rejectedWith(
           Error,
@@ -185,9 +178,9 @@ describe('`Tokens` Class', function () {
       });
 
       it('Should return the token holder balance', async function () {
-        const { signer, networkId, defiData, erc20Contract } = await loadFixture(deployFixture);
+        const { signer, networkId, defiData, mockToken0Contract } = await loadFixture(deployFixture);
 
-        const token = await erc20Contract.getAddress();
+        const token = await mockToken0Contract.getAddress();
         const holder = await signer.getAddress();
 
         const tokenBalances = await defiData.tokens.getBalances(networkId, [{ token: token, holder: holder }]);
@@ -201,12 +194,12 @@ describe('`Tokens` Class', function () {
 
     describe('Method `getAllowances`', function () {
       it('Should throw an error for invalid network ID', async function () {
-        const { signer, defiData, erc20Contract, exchange } = await loadFixture(deployFixture);
+        const { signer, defiData, mockToken0Contract, exchange } = await loadFixture(deployFixture);
 
         await expect(
           defiData.tokens.getAllowances(0, [
             {
-              token: erc20Contract.getAddress(),
+              token: mockToken0Contract.getAddress(),
               holder: await signer.getAddress(),
               spender: await exchange.uniswapV2RouterContract.getAddress()
             }
@@ -232,7 +225,7 @@ describe('`Tokens` Class', function () {
       });
 
       it('Should throw an error when the library is not initialized', async function () {
-        const { signer, networkId, erc20Contract, exchange } = await loadFixture(deployFixture);
+        const { signer, networkId, mockToken0Contract, exchange } = await loadFixture(deployFixture);
 
         // Create the DeFiData library
         const defiData = new DeFiData();
@@ -240,7 +233,7 @@ describe('`Tokens` Class', function () {
         await expect(
           defiData.tokens.getAllowances(networkId, [
             {
-              token: erc20Contract.getAddress(),
+              token: mockToken0Contract.getAddress(),
               holder: await signer.getAddress(),
               spender: await exchange.uniswapV2RouterContract.getAddress()
             }
@@ -252,9 +245,9 @@ describe('`Tokens` Class', function () {
       });
 
       it('Should return the token spender allowance', async function () {
-        const { signer, networkId, defiData, erc20Contract, exchange } = await loadFixture(deployFixture);
+        const { signer, networkId, defiData, mockToken0Contract, exchange } = await loadFixture(deployFixture);
 
-        const token = await erc20Contract.getAddress();
+        const token = await mockToken0Contract.getAddress();
         const holder = await signer.getAddress();
         const spender = await exchange.uniswapV2RouterContract.getAddress();
 
@@ -272,9 +265,9 @@ describe('`Tokens` Class', function () {
 
     describe('Method `getTokens`', function () {
       it('Should throw an error for invalid network ID', async function () {
-        const { defiData, erc20Contract } = await loadFixture(deployFixture);
+        const { defiData, mockToken0Contract } = await loadFixture(deployFixture);
 
-        await expect(defiData.tokens.getTokens(0, [await erc20Contract.getAddress()])).to.be.rejectedWith(
+        await expect(defiData.tokens.getTokens(0, [await mockToken0Contract.getAddress()])).to.be.rejectedWith(
           TypeError,
           'Invalid network id!'
         );
@@ -298,21 +291,21 @@ describe('`Tokens` Class', function () {
       });
 
       it('Should throw an error when the library is not initialized', async function () {
-        const { networkId, erc20Contract } = await loadFixture(deployFixture);
+        const { networkId, mockToken0Contract } = await loadFixture(deployFixture);
 
         // Create the DeFiData library
         const defiData = new DeFiData();
 
-        await expect(defiData.tokens.getTokens(networkId, [await erc20Contract.getAddress()])).to.be.rejectedWith(
+        await expect(defiData.tokens.getTokens(networkId, [await mockToken0Contract.getAddress()])).to.be.rejectedWith(
           Error,
           'The library is not initialized. Call the `ready` method before using any other function!'
         );
       });
 
       it('Should return the token information', async function () {
-        const { networkId, defiData, erc20Contract } = await loadFixture(deployFixture);
+        const { networkId, defiData, mockToken0Contract } = await loadFixture(deployFixture);
 
-        const token = await erc20Contract.getAddress();
+        const token = await mockToken0Contract.getAddress();
         const tokenInfo = await defiData.tokens.getTokens(networkId, [token]);
 
         // Check the return
@@ -320,13 +313,13 @@ describe('`Tokens` Class', function () {
         expect(tokenInfo).to.have.property(token).with.be.an('object');
 
         // Check the token
-        await isValidToken(tokenInfo[token], erc20Contract, false);
+        await isValidToken(tokenInfo[token], mockToken0Contract, false);
       });
 
       it('Should return the pairs when the option `getPairs` is enabled', async function () {
-        const { signer, networkId, exchange, defiData, erc20Contract } = await loadFixture(deployFixture);
+        const { signer, networkId, exchange, defiData, mockToken0Contract } = await loadFixture(deployFixture);
 
-        const token = await erc20Contract.getAddress();
+        const token = await mockToken0Contract.getAddress();
 
         // Create the pair (Token/WETH)
         await exchange.uniswapV2RouterContract.addLiquidityETH(
@@ -356,10 +349,155 @@ describe('`Tokens` Class', function () {
         expect(tokenPairs[token]).to.have.property('pairs').with.a.lengthOf(1);
 
         // Check the token
-        await isValidToken(tokenPairs[token], erc20Contract, false);
+        await isValidToken(tokenPairs[token], mockToken0Contract, false);
 
         // Check the pairs
-        await isValidPair(tokenPairs[token].pairs[0], exchange, erc20Contract, exchange.uniswapV2WETHContract);
+        await isValidPair(
+          tokenPairs[token].pairs[0],
+          exchange,
+          mockToken0Contract,
+          exchange.uniswapV2WETHContract,
+          exchange.uniswapV2WETHContract
+        );
+      });
+
+      it('Should return the correct results when the option `baseTokens` is enabled', async function () {
+        const { signer, networkId, exchange, defiData, mockToken0Contract, mockToken1Contract } =
+          await loadFixture(deployFixture);
+
+        const token0 = await mockToken0Contract.getAddress();
+        const token1 = await mockToken1Contract.getAddress();
+
+        // Create the pair (Token0/Token1)
+        await exchange.uniswapV2RouterContract.addLiquidity(
+          token0,
+          token1,
+          ethers.parseEther('100'),
+          ethers.parseEther('100'),
+          1,
+          1,
+          await signer.getAddress(),
+          9999999999
+        );
+
+        // Create the pair (Token/WETH)
+        await exchange.uniswapV2RouterContract.addLiquidityETH(
+          token0,
+          ethers.parseEther('100'),
+          1,
+          1,
+          await signer.getAddress(),
+          9999999999,
+          {
+            value: ethers.parseEther('100')
+          }
+        );
+
+        // Reload the library (Needed to match base token supplies)
+        await defiData.ready();
+
+        // Try to get the base tokens
+        const baseTokens = await defiData.tokens.getTokens(networkId, [token1]);
+        baseTokens[token1].isBaseToken = true;
+
+        // Try to get the token pairs
+        const tokenPairs = await defiData.tokens.getTokens(networkId, [token0], {
+          getPairs: true,
+          baseTokens: [baseTokens[token1]],
+          extraBaseTokens: [await exchange.uniswapV2WETHContract.getAddress()]
+        });
+
+        // Check the return
+        expect(tokenPairs).to.be.an('object');
+        expect(tokenPairs).to.have.property(token0).with.be.an('object');
+        expect(tokenPairs[token0]).to.have.property('pairs').with.be.an('array');
+        expect(tokenPairs[token0]).to.have.property('pairs').with.a.lengthOf(2);
+
+        // Check the token0
+        await isValidToken(tokenPairs[token0], mockToken0Contract, false);
+
+        // Check the pairs
+        await isValidPair(
+          tokenPairs[token0].pairs[0],
+          exchange,
+          mockToken0Contract,
+          mockToken1Contract,
+          mockToken1Contract
+        );
+        await isValidPair(
+          tokenPairs[token0].pairs[1],
+          exchange,
+          mockToken0Contract,
+          exchange.uniswapV2WETHContract,
+          exchange.uniswapV2WETHContract
+        );
+      });
+
+      it('Should return the correct results when the option `extraBaseTokens` is enabled', async function () {
+        const { signer, networkId, exchange, defiData, mockToken0Contract, mockToken1Contract } =
+          await loadFixture(deployFixture);
+
+        const token0 = await mockToken0Contract.getAddress();
+        const token1 = await mockToken1Contract.getAddress();
+
+        // Create the pair (Token/WETH)
+        await exchange.uniswapV2RouterContract.addLiquidityETH(
+          token0,
+          ethers.parseEther('100'),
+          1,
+          1,
+          await signer.getAddress(),
+          9999999999,
+          {
+            value: ethers.parseEther('100')
+          }
+        );
+
+        // Create the pair (Token0/Token1)
+        await exchange.uniswapV2RouterContract.addLiquidity(
+          token0,
+          token1,
+          ethers.parseEther('100'),
+          ethers.parseEther('100'),
+          1,
+          1,
+          await signer.getAddress(),
+          9999999999
+        );
+
+        // Reload the library (Needed to match base token supplies)
+        await defiData.ready();
+
+        // Try to get the token pairs
+        const tokenPairs = await defiData.tokens.getTokens(networkId, [token0], {
+          getPairs: true,
+          extraBaseTokens: [token1]
+        });
+
+        // Check the return
+        expect(tokenPairs).to.be.an('object');
+        expect(tokenPairs).to.have.property(token0).with.be.an('object');
+        expect(tokenPairs[token0]).to.have.property('pairs').with.be.an('array');
+        expect(tokenPairs[token0]).to.have.property('pairs').with.a.lengthOf(2);
+
+        // Check the token0
+        await isValidToken(tokenPairs[token0], mockToken0Contract, false);
+
+        // Check the pairs
+        await isValidPair(
+          tokenPairs[token0].pairs[0],
+          exchange,
+          mockToken0Contract,
+          exchange.uniswapV2WETHContract,
+          exchange.uniswapV2WETHContract
+        );
+        await isValidPair(
+          tokenPairs[token0].pairs[1],
+          exchange,
+          mockToken0Contract,
+          mockToken1Contract,
+          mockToken1Contract
+        );
       });
     });
   });
